@@ -1,8 +1,13 @@
-version: '2.1'
+x-arcane:
+  icon: https://pmecdn.protonweb.com/image-transformation/?s=c&image=image/upload/v1776940263/static/logos/bridge/bridge-badge.svg
+  urls:
+    - https://github.com/shenxn/protonmail-bridge-docker
+    - https://github.com/drygoatair/protonmail-bridge-docker
 
 services:
   protonmail-bridge:
-    image: shenxn/protonmail-bridge
+    build: ./build
+    image: protonmail-bridge:latest
     ports:
       - 1025:25/tcp
       - 1143:143/tcp
