@@ -14,6 +14,11 @@ services:
     restart: unless-stopped
     volumes:
       - protonmail:/root
+
 volumes:
   protonmail:
     name: protonmail
+
+networks:
+  protonmail-network:
+    name: protonmail-network
