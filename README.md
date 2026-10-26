@@ -1,16 +1,16 @@
 # ProtonMail IMAP/SMTP Bridge Docker Container
 
-![version badge](https://img.shields.io/docker/v/shenxn/protonmail-bridge)
-![image size badge](https://img.shields.io/docker/image-size/shenxn/protonmail-bridge/build)
-![docker pulls badge](https://img.shields.io/docker/pulls/shenxn/protonmail-bridge)
-![deb badge](https://github.com/shenxn/protonmail-bridge-docker/workflows/pack%20from%20deb/badge.svg)
-![build badge](https://github.com/shenxn/protonmail-bridge-docker/workflows/build%20from%20source/badge.svg)
-
 This is an unofficial Docker container of the [ProtonMail Bridge](https://protonmail.com/bridge/). Some of the scripts are based on [Hendrik Meyer's work](https://gitlab.com/T4cC0re/protonmail-bridge-docker).
 
-Docker Hub: [https://hub.docker.com/r/shenxn/protonmail-bridge](https://hub.docker.com/r/shenxn/protonmail-bridge)
+This repository is a fork of [shenxn/protonmail-bridge-docker](https://github.com/shenxn/protonmail-bridge-docker), maintained at [drygoatair/protonmail-bridge-docker](https://github.com/drygoatair/protonmail-bridge-docker).
 
-GitHub: [https://github.com/shenxn/protonmail-bridge-docker](https://github.com/shenxn/protonmail-bridge-docker)
+Docker Hub (upstream images, not published from this fork): [https://hub.docker.com/r/shenxn/protonmail-bridge](https://hub.docker.com/r/shenxn/protonmail-bridge)
+
+### Differences from upstream
+
+ - The build image installs `libfido2-dev` and `libcbor-dev` (and `libfido2-1` at runtime), which recent Bridge versions need to compile.
+ - The example [docker-compose.yml](docker-compose.yml) builds the image locally from `./build` and attaches the service to a named `protonmail-network` network.
+ - The daily update check tracks new upstream Bridge releases in `VERSION`.
 
 ## ARM Support
 
@@ -31,13 +31,7 @@ tag | description
 
 ## Initialization
 
-To initialize and add account to the bridge, run the following command.
-
-```
-docker run --rm -it -v protonmail:/root shenxn/protonmail-bridge init
-```
-
-If you want to use Docker Compose instead, you can create a copy of the provided example [docker-compose.yml](docker-compose.yml) file, modify it to suit your needs, and then run the following command:
+To initialize, create a copy of the provided example [docker-compose.yml](docker-compose.yml) file, modify it to suit your needs, and then run the following command:
 
 ```
 docker compose run protonmail-bridge init
@@ -87,7 +81,9 @@ The initialization step exposes the bridge CLI so you can do things like switch 
 
 For anyone who want to build this container on your own (for development or security concerns), here is the guide to do so. First, you need to `cd` into the directory (`deb` or `build`, depending on which type of image you want). Then just run the docker build command
 ```
-docker build .
+docker build --build-arg version=$(cat ../VERSION) .
 ```
+
+The `build` image requires the `version` build argument (the upstream Bridge git tag, e.g. `v3.27.1`). The `deb` image does not need it. Note that `docker compose build` passes no `version`, so the clone falls back to the upstream default branch rather than the release in `VERSION`; add `args: {version: v3.27.1}` under `build:` in your compose file to pin a release.
 
 That's it. The `Dockerfile` and bash scripts handle all the downloading, building, and packing. You can also add tags, push to your favorite docker registry, or use `buildx` to build multi architecture images.
